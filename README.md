@@ -135,7 +135,7 @@ at least the paper `CLASS II: Approximation schemes <http://arxiv.org/abs/1104.2
 Support
 -------
 
-To get support, please open a new issue on the
+To get support, please open a new issue on the................
 
 https://github.com/lesgourg/class_public
 
