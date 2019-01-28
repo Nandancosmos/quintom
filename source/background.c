@@ -403,12 +403,13 @@ int background_functions(
     pvecback[pba->index_bg_Omega_sig_scf] = Omega_sig; // value of the phantom field Omega_phi
     pvecback[pba->index_bg_theta_sig_scf] = theta_sig; // value of the phantom field theta_phi
     pvecback[pba->index_bg_y_sig_scf] = y1_sig; // value of the phantom field y1_phi
-    pvecback[pba->index_bg_rho_phi] = exp(Omega_phi)*rho_tot/(1.-exp(Omega_phi)); // energy of the quintesence field
+    pvecback[pba->index_bg_rho_phi] = exp(Omega_phi)*rho_tot/(1.-exp(Omega_phi) - exp(Omega_sig)); // energy of the quintesence field
     pvecback[pba->index_bg_p_phi] = -cos_scf(pba,theta_phi)*pvecback[pba->index_bg_rho_scf];// pressure of the quintessence field
-    pvecback[pba->index_bg_rho_sig] = exp(Omega_sig)*rho_tot/(1.-exp(Omega_sig)); // energy of the phantom field
+    pvecback[pba->index_bg_rho_sig] = exp(Omega_sig)*rho_tot/(1.-exp(Omega_sig)-exp(Omega_phi)); // energy of the phantom field
     pvecback[pba->index_bg_p_sig] = -cosh(theta_sig)*pvecback[pba->index_bg_rho_sig];// pressure of the phantom field
     //rho_m += pvecback[pba->index_bg_rho_scf]; // add scalar field energy density into the total matter budget
-    pvecback[pba->index_bg_rho_scf] = exp(Omega_phi + Omega_sig)*rho_tot/(1.-exp(Omega_phi + Omega_sig));
+    // pvecback[pba->index_bg_rho_scf] = (exp(Omega_phi) + exp(Omega_sig))*rho_tot/(1.-exp(Omega_phi) - exp(Omega_sig));//
+    pvecback[pba->index_bg_rho_scf] = pvecback[pba->index_bg_rho_phi] + pvecback[pba->index_bg_rho_sig] ;
     rho_tot += pvecback[pba->index_bg_rho_scf]; // add scalar field density to the total one
     p_tot += pvecback[pba->index_bg_p_scf]; // add scalar field pressure to the total one
   }
@@ -1843,6 +1844,13 @@ int background_initial_conditions(
     pvecback_integration[pba->index_bi_y_phi_scf] = pba->y_phi_ini_scf;
   }
 
+
+ if(pba->has_scf == _TRUE_){
+    pvecback_integration[pba->index_bi_Omega_sig_scf] = pba->Omega_sig_ini_scf;
+    pvecback_integration[pba->index_bi_theta_sig_scf] = pba->theta_sig_ini_scf;
+    pvecback_integration[pba->index_bi_y_sig_scf] = pba->y_sig_ini_scf;
+  }
+
   /* Infer pvecback from pvecback_integration */
   class_call(background_functions(pba, pvecback_integration, pba->normal_info, pvecback),
 	     pba->error_message,
@@ -1928,6 +1936,9 @@ int background_output_titles(struct background * pba,
   class_store_columntitle(titles,"Omega_phi_scf",pba->has_scf);
   class_store_columntitle(titles,"theta_phi_scf",pba->has_scf);
   class_store_columntitle(titles,"y_phi_scf",pba->has_scf);
+  class_store_columntitle(titles,"Omega_sig_scf",pba->has_scf);
+  class_store_columntitle(titles,"theta_sig_scf",pba->has_scf);
+  class_store_columntitle(titles,"y_sig_scf",pba->has_scf);
   
   class_store_columntitle(titles,"gr.fac. D",_TRUE_);
   class_store_columntitle(titles,"gr.fac. f",_TRUE_);
@@ -1977,6 +1988,9 @@ int background_output_data(
     class_store_double(dataptr,pvecback[pba->index_bg_Omega_phi_scf],pba->has_scf,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_theta_phi_scf],pba->has_scf,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_y_phi_scf],pba->has_scf,storeidx);
+    class_store_double(dataptr,pvecback[pba->index_bg_Omega_sig_scf],pba->has_scf,storeidx);
+    class_store_double(dataptr,pvecback[pba->index_bg_theta_sig_scf],pba->has_scf,storeidx);
+    class_store_double(dataptr,pvecback[pba->index_bg_y_sig_scf],pba->has_scf,storeidx);
 
     class_store_double(dataptr,pvecback[pba->index_bg_D],_TRUE_,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_f],_TRUE_,storeidx);

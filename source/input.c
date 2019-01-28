@@ -317,7 +317,7 @@ int input_init(
       //printf("%d, %d: %s\n",counter,index_target,target_namestrings[index_target]);
     }
 
-    if (unknown_parameters_size == 1){
+    if (unknown_parameters_size == 3){
       /* We can do 1 dimensional root finding */
       /* If shooting fails, postpone error to background module to play nice with MontePython. */
       class_call_try(input_find_root(&xzero,
@@ -1029,14 +1029,14 @@ int input_read_parameters(
     if (flag1 == _TRUE_){
       if((strstr(string1,"y") != NULL) || (strstr(string1,"Y") != NULL)){
         pba->attractor_ic_scf = _TRUE_;
-        pba->y_sig_ini_scf = 5.*pba->theta_sig_ini_scf;
+        pba->y_phi_ini_scf = 5.*pba->theta_phi_ini_scf;
         }
       else{
         pba->attractor_ic_scf = _FALSE_;
         class_test(pba->scf_parameters_size<2,
 		   errmsg,
 		   "Since you are not using the attractor initial condition for y1_phi, you must specify it in the third entry in scf_parameters. See explanatory.ini for more details.");
-    	pba->y_sig_ini_scf = pba->scf_parameters[2];
+    	pba->y_phi_ini_scf = pba->scf_parameters[2];
       }
     }
     }
@@ -1063,7 +1063,7 @@ int input_read_parameters(
         //printf(" -> Shooting = %1.2e\n",pba->scf_parameters[pba->scf_tuning_index]);
         //printf(" -> Shooting1 = %1.2e\n",pba->scf_parameters[pba->scf_tuning_index+1]);
         pba->Omega_sig_ini_scf = pba->scf_parameters[pba->scf_tuning_index1]+log(1.e-56*pba->Omega0_scf*(pba->Omega0_cdm+pba->Omega0_b)/(pba->Omega0_g+pba->Omega0_ur));
-        pba->theta_phi_ini_scf = -(9./10.)*1.e-28*pow(- 2.*(1-cosh(pba->scf_parameters[7]))*(pba->Omega0_cdm+pba->Omega0_b)/(pba->Omega0_g+pba->Omega0_ur),0.5);
+        pba->theta_sig_ini_scf = -(9./10.)*1.e-28*pow(- 2.*(1-cosh(pba->scf_parameters[7]))*(pba->Omega0_cdm+pba->Omega0_b)/(pba->Omega0_g+pba->Omega0_ur),0.5);
         
         /** The initial condition for y1_phi_ini corresponds, or not, to the attractor value */
         class_call(parser_read_string(pfc,
@@ -1077,14 +1077,14 @@ int input_read_parameters(
         if (flag1 == _TRUE_){
             if((strstr(string1,"y") != NULL) || (strstr(string1,"Y") != NULL)){
                 pba->attractor_ic_scf = _TRUE_;
-                pba->y_phi_ini_scf = 5.*pba->theta_sig_ini_scf;
+                pba->y_sig_ini_scf = 5.*pba->theta_sig_ini_scf;
             }
             else{
                 pba->attractor_ic_scf = _FALSE_;
                 class_test(pba->scf_parameters_size<2,
                            errmsg,
                            "Since you are not using the attractor initial condition for y1_phi, you must specify it in the third entry in scf_parameters. See explanatory.ini for more details.");
-                pba->y_phi_ini_scf = pba->scf_parameters[2];
+                pba->y_sig_ini_scf = pba->scf_parameters[2];
             }
         }
     }
@@ -2482,6 +2482,7 @@ int input_read_parameters(
   class_read_double("tol_initial_Omega_r",ppr->tol_initial_Omega_r);
   class_read_double("tol_ncdm_initial_w",ppr->tol_ncdm_initial_w);
   class_read_double("safe_phi_scf",ppr->safe_phi_scf);
+  class_read_double("safe_sig_scf",ppr->safe_sig_scf);
 
   /** - (h.2.) parameters related to the thermodynamics */
 
